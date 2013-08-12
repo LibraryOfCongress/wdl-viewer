@@ -1,0 +1,12 @@
+{
+    "maxlen": 110,
+
+    "strict": true,
+    "browser": true,
+
+    "curly": true,
+    "noarg": true,
+    "trailing": true,
+    "undef": true,
+    "unused": true
+}

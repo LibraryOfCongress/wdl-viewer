@@ -1,0 +1,20 @@
+@import "compass/reset";
+
+@import "sprites/seadragon-controls/*.png";
+
+// Viewport dimensions
+$breakSmall: 480px;
+$breakMedium: 768px;
+
+// Text colors
+$pageBackgroundColor: #0e182e;
+$mutedTextColor: #999;
+$textColor: #fff;
+
+// Link colors
+$linkColor: #369;
+
+// Structural colors
+$viewportBorderColor: #69c;
+
+@import "view";

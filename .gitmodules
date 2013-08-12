@@ -1,0 +1,3 @@
+[submodule "external/openseadragon"]
+	path = external/openseadragon
+	url = https://github.com/openseadragon/openseadragon.git

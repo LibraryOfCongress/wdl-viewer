@@ -1,0 +1,434 @@
+@import "compass";
+@import "compass/css3/user-interface";
+
+.wdl-viewer {
+    min-width: 320px;
+    min-height: 320px;
+
+    height: 100%;
+
+    font-family: sans-serif;
+
+    background-color: black; // Set this here so it'll fill the viewport in all zoom/pan scenarios
+    color: $mutedTextColor;
+
+    * {
+        @include box-sizing(border-box);
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    #viewer {
+        background-color: black; // Set this here so it'll fill the viewport in all zoom/pan scenarios
+
+        height: 100%;
+        width: 100%;
+
+        font-size: large;
+        @media screen and (max-width: $breakMedium) {
+            font-size: small;
+        }
+
+        text-align: center;
+
+        header, footer {
+            z-index: 10;
+            width: 100%;
+
+            background-color: $pageBackgroundColor;
+            background-color: transparentize($pageBackgroundColor, 0.1);
+
+            > nav {
+                display: block;
+                border: 0px solid #369;
+
+                > * {
+                    display: inline-block;
+                    overflow: hidden;
+
+                    font-size: 16px;
+
+                    @media screen and (max-width: $breakSmall) {
+                        font-size: 12px;
+                        line-height: 18px;
+                        height: 20px;
+                    }
+
+                    &.hidden {
+                        display: none; // Otherwise display:inline-block will clobber this
+                    }
+                }
+            }
+
+            a {
+                color: $viewportBorderColor;
+            }
+
+            button {
+                min-width: 1.4em;
+                margin: 1px 2px;
+
+                @media screen and (max-width: $breakSmall) {
+                    padding: 0;
+                    font-size: inherit;
+                }
+            }
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+
+            > nav {
+                border-bottom-width: 2px;
+
+                text-align: center;
+
+                height: 26px;
+
+                > h1 {
+                    font-family: inherit;
+                    font-weight: bolder;
+                    max-width: 90%;
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                    padding: 4px;
+
+                    a {
+                        color: lighten($mutedTextColor, 15%);
+                    }
+                }
+
+                > form {
+                    margin: 0 auto;
+                }
+            }
+        }
+
+        footer {
+            position: fixed;
+            bottom: 0;
+
+            height: 30px;
+
+            > nav {
+                border-top-width: 2px;
+                padding-top: 1px;
+
+                > * {
+                    height: 24px;
+                    vertical-align: baseline;
+                }
+
+                // Range input slider
+                #index, #fd-slider-index {
+                    display: inline-block;
+                    width: 240px;
+
+                    .no-history & {
+                        display: none;
+                    }
+
+                    @media screen and (max-width: $breakMedium) {
+                        display: none;
+                    }
+                }
+
+                #index {
+                    height: 22px;
+                    vertical-align: middle;
+                }
+
+                // Current page / goto control:
+                .current-index {
+                    width: 3em;
+                    @media screen and (max-width: $breakSmall) {
+                        width: 2em;
+                    }
+                }
+
+                .max-index, .max-index-label {
+                    @media screen and (max-width: $breakSmall) {
+                        display: none;
+                    }
+                }
+
+                /* fdSlider polyfill adjustments */
+                #fd-slider-index {
+                    vertical-align: top;
+                    height: 22px;
+                }
+
+                #index.fd-form-element-hidden {
+                    display: none; // We have a default display:inline-block which is more specific
+                    // See https://bugzilla.mozilla.org/show_bug.cgi?id=872351
+                    height: 0;
+                    width: 0;
+                }
+
+                .controls button {
+                    height: 22px;
+                }
+            }
+
+            .toolbar {
+                // Since we have a fixed height, we can't allow wrapping buttons off of the display:
+                white-space: nowrap;
+
+                @include user-select(none);
+
+                @media screen and (max-width: $breakSmall) {
+                    // Hide the second back to item link on very small displays:
+                    .item-detail-nav {
+                        display: none;
+                    }
+                }
+
+                .item-detail-nav a:before {
+                    content: "←";
+                }
+
+                .page {
+                    &.disabled {
+                        color: $mutedTextColor;
+                        text-decoration: none;
+                        cursor: default;
+                    }
+
+                    &.next:after {
+                        content: "→";
+                    }
+
+                    &.previous:before {
+                        content: "←";
+                    }
+
+                    @media screen and (max-width: $breakSmall) {
+                        display: none;
+                    }
+                }
+
+                .no-fullscreen & #toggle-fullscreen {
+                    display: none;
+                }
+            }
+        }
+
+        #viewport {
+            display: table;
+
+            // n.b. these should be 100vh/100vw but those are buggy on all WebKit browsers
+            width: 100%;
+            height: 100%;
+
+            @include user-select(none);
+
+            #pages {
+                display: table-cell;
+                vertical-align: middle;
+                padding: 0;
+
+                img {
+                    max-height: 100vh;
+                    max-width: 100vw;
+                }
+
+                img + img {
+                    margin: 0 10px;
+                }
+            }
+
+            #seadragon {
+                .control {
+                    width: seadragon-controls-sprite-width(home);
+                    height: seadragon-controls-sprite-height(home);
+
+                    margin: 0;
+                    margin-bottom: 32px; // TODO: calculate this from the footer height
+
+                    background-repeat: no-repeat;
+                    overflow: hidden;
+
+                    @include squish-text;
+
+                    text-decoration: none!important;
+
+                    .touch & {
+                        display: none;
+                    }
+
+                    &.zoom-in {
+                        @include seadragon-controls-sprite(zoomin);
+                    }
+                    &.zoom-out {
+                        @include seadragon-controls-sprite(zoomout);
+                    }
+                    &.zoom-full {
+                        @include seadragon-controls-sprite(fullpage);
+                    }
+                    &.home {
+                        @include seadragon-controls-sprite(home);
+                    }
+                    &.previous-page {
+                        @include seadragon-controls-sprite(previous);
+                        &:lang(ar) {
+                            @include seadragon-controls-sprite(next);
+                        }
+                    }
+                    &.next-page {
+                        @include seadragon-controls-sprite(next);
+                        &:lang(ar) {
+                            @include seadragon-controls-sprite(previous);
+                        }
+                    }
+                }
+            }
+
+            #grid {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+
+                overflow-x: hidden;
+                overflow-y: scroll;
+                -webkit-overflow-scrolling: touch;
+
+                background-color: #111;
+
+                padding: 30px 0px;
+
+                div {
+                    display: inline-block;
+                    height: 256px;
+                    width: 256px;
+                    overflow: hidden;
+
+                    line-height: 490px;
+
+                    @media screen and (max-width: 600px) {
+                        height: 128px;
+                        width: 128px;
+                        line-height: 240px;
+                    }
+
+                    margin: 8px;
+
+                    text-align: left;
+
+                    color: darken($mutedTextColor, 15%);
+
+                    // JavaScript will set background-url to the image, avoiding extra DOM elements and some
+                    // alignment bugs exposed based on the aspect ratio of a contained <img> within a row(?!)
+                    background-color: transparent;
+                    background-repeat: no-repeat;
+                    background-position: center;
+                    background-size: contain;
+
+                    &.current {
+                        outline: solid $linkColor 2px;
+                    }
+                }
+            }
+        }
+
+    }
+
+    #help {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+
+        z-index: 9999;
+
+        width: 100%;
+        height: 100%;
+        min-height: 100%;
+        min-width: 100%;
+
+        text-align: center;
+
+        > div {
+            display: table;
+            height: 100%;
+            width: 100%;
+
+            > div {
+                display: table-row;
+
+                > div {
+                    display: table-cell;
+                    vertical-align: middle;
+                }
+            }
+        }
+
+        color: white;
+        background-color: rgba(0,0,0, 0.8);
+        .no-rgba & {
+            background-color: black;
+            @include opacity(0.8);
+        }
+
+        font-size: x-large;
+        @media screen and (max-width: $breakSmall) {
+            font-size: inherit;
+        }
+
+        h1 {
+            font-family: sans-serif;
+            font-size: xx-large;
+            @media screen and (max-width: $breakSmall) {
+                font-size: larger;
+            }
+        }
+
+        h2 {
+            font-family: sans-serif;
+            color: inherit;
+        }
+
+        p, table {
+            font-size: smaller;
+            max-width: 40em;
+            margin: auto;
+
+            color: #ddd;
+        }
+
+        th, td {
+            vertical-align: top;
+            padding: 0 1em;
+        }
+
+        td {
+            text-align: left;
+            &:lang(ar) {
+                text-align: right;
+            }
+        }
+
+        .touch & .keyboard-controls {
+            display: none;
+        }
+
+        .no-touch & .touch-controls {
+            display: none;
+        }
+    }
+
+    // Rules to hide features when they're unsupported:
+    .no-fullscreen & .requires-fullscreen {
+        display: none;
+    }
+
+    #viewer[data-active-view=seadragon] .rotate,
+    #viewer[data-active-view=grid] .rotate {
+        display: none;
+    }
+}
