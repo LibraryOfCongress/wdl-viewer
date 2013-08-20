@@ -97,6 +97,18 @@
         this.gridView = new GridView(this, $grid, config);
         this.activeView = this.pageView;
 
+        if ($.isFunction(config.imageUrlTemplate)) {
+            this.generateImageUrl = config.imageUrlTemplate;
+        }
+
+        if ($.isFunction(config.pageUrlTemplate)) {
+            this.generatePageUrl = config.pageUrlTemplate;
+        }
+
+        if ($.isFunction(config.dziUrlTemplate)) {
+            this.generateDziUrl = config.dziUrlTemplate;
+        }
+
         // Add toolbar features which only work with JavaScript:
 
         $('<button class="rotate requires-csstransforms" type="button">↺</button>')
@@ -356,6 +368,9 @@
                         return maxEdge;
                 }
             });
+        },
+        generateDziUrl: function (group, index) {
+            return this.config.dziUrlTemplate.replace("{group}", group).replace("{index}", index);
         },
         setIndex: function (newIndex) {
             if (newIndex < 1) {
@@ -649,9 +664,8 @@
         };
 
         this.update = function () {
-            var dziUrl = this.controller.config.dziUrlTemplate
-                .replace("{group}", this.controller.currentGroup)
-                .replace("{index}", this.controller.currentIndex);
+            var dziUrl = this.controller.generateDziUrl(this.controller.currentGroup,
+                                                        this.controller.currentIndex);
 
             if (!this.seadragon) {
                 this.initializeSeadragon(dziUrl);
