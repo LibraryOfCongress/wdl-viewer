@@ -93,7 +93,11 @@
         }
 
         this.pageView = new PageView(this, $pages, config);
-        this.seadragonView = new SeadragonView(this, $seadragon, config);
+
+        if (config.dziUrlTemplate) {
+            this.seadragonView = new SeadragonView(this, $seadragon, config);
+        }
+
         this.gridView = new GridView(this, $grid, config);
         this.activeView = this.pageView;
 
@@ -125,15 +129,17 @@
                 this.activeView.rotate();
             }, this));
 
-        $('<button id="toggle-seadragon" type="button">' + gettext('Zoom') + '</button>')
-            .appendTo("footer .toolbar .controls")
-            .on("click", $.proxy(function () {
-                if (this.activeView == this.seadragonView) {
-                    this.openPageView();
-                } else {
-                    this.openSeadragonView();
-                }
-            }, this));
+        if (this.seadragonView) {
+            $('<button id="toggle-seadragon" type="button">' + gettext('Zoom') + '</button>')
+                .appendTo("footer .toolbar .controls")
+                .on("click", $.proxy(function () {
+                    if (this.activeView == this.seadragonView) {
+                        this.openPageView();
+                    } else {
+                        this.openSeadragonView();
+                    }
+                }, this));
+        }
 
         $('<button id="toggle-grid" type="button">' + gettext('Grid') + '</button>')
             .appendTo("footer .toolbar .controls")
@@ -470,9 +476,14 @@
             this.viewer.attr("data-active-view", "grid").trigger("hide-footer");
         },
         openSeadragonView: function () {
+            if (!this.seadragonView) {
+                return;
+            }
+
             if (this.activeView) {
                 this.activeView.hide();
             }
+
             this.activeView = this.seadragonView;
             this.activeView.show();
             this.viewer.attr("data-active-view", "seadragon").trigger("show-footer");
