@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <!--[if IE]>
+            <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+            <meta http-equiv="imagetoolbar" content="no">
+        <![endif]-->
+        <title>
+            WDL Viewer example:
+        </title>
+        <link rel="stylesheet" href="../build/wdl-viewer.css" type="text/css">
+        <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+    </head>
+    <body class="wdl-viewer">
+        <!-- http://memory.loc.gov/cgi-bin/image-services/jp2.py?data=/home/www/data/gmd/gmd3m/g3200m/g3200m/gct00262/ca000002.jp2&res= -->
+        <div id="viewer" data-group="1" data-index="1">
+            <header>
+                <nav>
+                    <h1>
+                        Title: <a href="http://lccn.loc.gov/48040724">Epytoma Ioa[n]nis de Mo[n]te Regio in Almagestu[m] Ptolomei</a>
+                    </h1>
+                </nav>
+            </header>
+            <div id="viewport">
+                <div id="pages">
+                    <div class="current"><img alt="" src="http://lcweb2.loc.gov/service/rbc/rbc0001/2013/2013vollb40724/0000q.jpg"></div>
+                </div>
+            </div>
+            <footer>
+                <nav class="toolbar">
+                    <div class="item-detail-nav">
+                        <a href="/en/item/1/">Item Detail</a>
+                    </div>
+                    <label class="group">
+                        Volume
+                        <select id="group" disabled>
+                            <option selected>
+                                1
+                            </option>
+                        </select>
+                    </label>
+                    <div class="index">
+                        <label>Page <input type="number" disabled class="current-index" value="1" min="1" max="1" step="1"></label> <label class="max-index-label">of <span class="max-index">1</span></label> <input disabled id="index" type="range" value="1" min="1" max="1" step="1"> <a class="page previous disabled">Previous</a> <a class="page next disabled">Next</a>
+                    </div>
+                    <div class="controls"></div>
+                </nav>
+            </footer>
+        </div>
+        <div id="help" class="hidden">
+            <div>
+                <div>
+                    <div>
+                        <h1>
+                            How to use the WDL Reader
+                        </h1>
+                        <p>
+                            “Read” mode is designed to be as fast as possible<br>
+                            “Grid” mode displays many pages at once for quick navigation
+                        </p>
+                        <section class="keyboard-controls">
+                            <h2>
+                                Keyboard Navigation
+                            </h2>
+                            <table>
+                                <tr>
+                                    <th>
+                                        Go to next page
+                                    </th>
+                                    <td>
+                                        <kbd>Page Down</kbd>, <kbd>spacebar</kbd>, <kbd>j</kbd>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        Go to previous page
+                                    </th>
+                                    <td>
+                                        <kbd>Page Up</kbd>, <kbd>shift+spacebar</kbd>, <kbd>k</kbd>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        Switch to grid view
+                                    </th>
+                                    <td>
+                                        <kbd>g</kbd>
+                                    </td>
+                                </tr>
+                                <tr class="requires-fullscreen">
+                                    <th>
+                                        Enter fullscreen mode
+                                    </th>
+                                    <td>
+                                        <kbd>f</kbd>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        Display help
+                                    </th>
+                                    <td>
+                                        <kbd>?</kbd>
+                                    </td>
+                                </tr>
+                            </table>
+                        </section>
+                        <section class="touch-controls">
+                            <h2>
+                                Touch Controls
+                            </h2>
+                            <table>
+                                <tr>
+                                    <th>
+                                        Go to next page
+                                    </th>
+                                    <td>
+                                        Swipe across the screen to the right<br>
+                                        Tap on the right edge of the screen
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        Go to previous page
+                                    </th>
+                                    <td>
+                                        Swipe across the screen to the left<br>
+                                        Tap on the left edge of the screen
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        Switch to grid view
+                                    </th>
+                                    <td>
+                                        Tap “Grid”
+                                    </td>
+                                </tr>
+                            </table>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-throttle-debounce/1.1/jquery.ba-throttle-debounce.min.js"></script>
+        <script src="../src/js/wdl-viewer.js"></script>
+        <script>
+            Modernizr.load([
+                {
+                    test: Modernizr.inputtypes.range && Modernizr.history,
+                    nope: [
+                        /* https://github.com/freqdec/fd-slider */
+                        'http://static.wdl.org/external/fd-slider/fd-slider.min.4f7795c3d956.css',
+                        'http://static.wdl.org/external/fd-slider/fd-slider.93e761fdb58d.js'
+                    ],
+                    callback: function(id, testResult) {
+                        if ("fdSlider" in window && typeof(fdSlider.onDomReady) != "undefined") {
+                            fdSlider.onDomReady();
+                        };
+                    }
+                },
+                {
+                    test: Modernizr.history,
+                    complete: function() {
+                        // Slightly wonky double check but callback: won't fire if you don't load anything
+                        // and this keeps polyfills in one place:
+                        if (!Modernizr.history) {
+                            window.history.pushState = function (state, title, url) {
+                                document.location.href = url;
+                            }
+                        } else {
+                            $(".next.page").on("click", function () {
+                                $viewer.trigger("goto-next-page"); return false;
+                            })
+                            $(".previous.page").on("click", function () {
+                                $viewer.trigger("goto-previous-page"); return false;
+                            })
+                        }
+                    }
+                },
+                {
+                    test: Modernizr.touch,
+                    yep: [
+                        '//cdnjs.cloudflare.com/ajax/libs/hammer.js/1.0.5/hammer.min.js'
+                    ],
+                    complete: function(id, testResult) {
+                        if (Modernizr.touch && typeof(jQuery.fn.hammer) !== "undefined") {
+                            $(window).hammer()
+                                .on("swipeleft", function () { $viewer.trigger("goto-next-page"); })
+                                .on("swiperight", function () { $viewer.trigger("goto-previous-page"); });
+
+                            var lastTimeoutId;
+
+                            $("#pages").hammer()
+                                .on("tap", function (evt) {
+                                    if (evt.gesture.center.pageX < 50) {
+                                        $viewer.trigger("goto-previous-page");
+                                    } else if ($(window).width() - evt.gesture.center.pageX < 50) {
+                                        $viewer.trigger("goto-next-page");
+                                    } else {
+                                        $viewer.trigger("toggle-chrome");
+                                    }
+
+                                    if (lastTimeoutId) {
+                                        window.clearTimeout(lastTimeoutId);
+                                    }
+
+                                    lastTimeoutId = window.setTimeout(function () {
+                                        $viewer.trigger("hide-chrome");
+                                    }, 6000);
+                                })
+                                .on("pinchout", function () {
+                                    $viewer.trigger("open-seadragon");
+                                });
+
+                            $viewer.on("page-changed", function () {
+                                $viewer.trigger("hide-chrome");
+                            });
+                        }
+                    }
+                },
+            ]);
+
+            if (navigator.userAgent.match(/Chrome/)) {
+                // Suppress fullscreen mode on Chrome until they close
+                // https://code.google.com/p/chromium/issues/detail?id=138324
+                $('html').removeClass("fullscreen").addClass("no-fullscreen");
+                Modernizr.fullscreen = false;
+            }
+
+			function generateImageUrl(group, index, maxEdge) {
+				// These URLs need to be zero-padded:
+				var idx = ("0000" + (index - 1)).substr(-4);
+				return "http://lcweb2.loc.gov/service/rbc/rbc0001/2013/2013vollb40724/" + idx + "q.jpg"
+			}
+
+            var $window = $(window),
+                $viewer = $("#viewer").wdlViewer({
+                    pageGroups: {"1": 461}, // List of groups and the last index value in each
+                    pageUrlTemplate: "ptolemy.html#{group}/{index}",
+                    imageUrlTemplate: generateImageUrl,
+                    placeholderSrc: "http://content.wdl.org/placeholder/308x255.png",
+                    initialView: "page"
+                });
+
+            $("input,select").removeAttr("disabled");
+
+            // Help browsers which don't support <link rel="prefetch">:
+            $viewer.trigger("prefetch-adjacent-pages");
+
+            $viewer.on("page-changed", function () {
+                // If you use Google Analytics:
+                // _gaq.push(['_trackPageview', document.location.pathname]);
+            });
+
+            $window.on("resize", function () {
+                /*
+                    This works around IE<9's lack of any support for viewport units and WebKit not correctly
+                    recalculating them after a window resize (see https://bugs.webkit.org/show_bug.cgi?id=114690)
+                */
+                $("#pages img").css({
+                    "max-height": $window.height(),
+                    "max-width": $window.width()
+                });
+
+                $viewer.find("h1").css("max-width", $window.width() - 20);
+            }).trigger("resize");
+        </script>
+    </body>
+</html>
