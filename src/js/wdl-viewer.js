@@ -78,6 +78,7 @@
         this.header = $header;
 
         this.config = config;
+        this.rotation = config.viewportRotation || 0;
 
         config.placeholderSrc = config.placeholderSrc || placeholderImage;
         // TODO: Adjust image max size based on the viewport
@@ -118,18 +119,18 @@
 
         // Add toolbar features which only work with JavaScript:
 
-        $('<button class="rotate requires-csstransforms" type="button">↺</button>')
+        $('<button class="rotate" type="button">↺</button>')
             .attr("title", gettext('Rotate Left'))
             .appendTo("footer .toolbar .controls")
             .on("click", $.proxy(function () {
-                this.activeView.rotate(true);
+                this.rotate(true);
             }, this));
 
-        $('<button class="rotate requires-csstransforms" type="button">↻</button>')
+        $('<button class="rotate" type="button">↻</button>')
             .attr("title", gettext('Rotate Right'))
             .appendTo("footer .toolbar .controls")
             .on("click", $.proxy(function () {
-                this.activeView.rotate();
+                this.rotate();
             }, this));
 
         if (this.seadragonView) {
@@ -202,8 +203,13 @@
             }
 
             if (evt.metaKey || evt.altKey) {
-                // Allow normal handling as we never use meta keys:
-                return true;
+                if (evt.which == 37 || evt.which == 39) {
+                    this.rotate(evt.which == 37);
+                    return false;
+                } else {
+                    // Allow normal handling to avoid interfering with normal browser controls:
+                    return true;
+                }
             }
 
             // Global state changes:
@@ -490,13 +496,18 @@
             this.activeView = this.seadragonView;
             this.activeView.show();
             this.viewer.attr("data-active-view", "seadragon").trigger("show-footer");
+        },
+        rotate: function (reverse) {
+            this.rotation += reverse ? -90 : 90;
+            if (this.activeView && this.activeView.setRotation) {
+                this.activeView.setRotation(this.rotation);
+            }
         }
     };
 
     function PageView(controller, $container, config) {
         this.controller = controller;
         this.config = config;
-        this.rotation = 0;
 
         var $pages = $("#pages"),
             $currentPage = $pages.find(".current img").first(),
@@ -515,24 +526,12 @@
             this.update();
         };
 
-        this.onKeydown = $.proxy(function (evt) {
-            if (evt.metaKey || evt.altKey) {
-                if (evt.which == 37 || evt.which == 39) {
-                    this.rotate(evt.which == 37);
-                    return false;
-                }
-            }
-
-        }, this);
-
-        this.rotate = function (reverse) {
-            this.rotation += reverse ? -90 : 90;
-
+        this.setRotation = function (degrees) {
             // We set this explicitly here rather
             $pages.css({
-               '-webkit-transform': 'rotate(' + this.rotation + 'deg)',
-               '-ms-transform':     'rotate(' + this.rotation + 'deg)',
-               'transform':         'rotate(' + this.rotation + 'deg)'
+               '-webkit-transform': 'rotate(' + degrees + 'deg)',
+               '-ms-transform':     'rotate(' + degrees + 'deg)',
+               'transform':         'rotate(' + degrees + 'deg)'
             });
 
             this.checkViewportConstraints();
@@ -569,6 +568,8 @@
             } else {
                 $nextPage.hide();
             }
+
+            this.setRotation(this.controller.rotation);
         };
 
         this.checkViewportConstraints = function() {
@@ -581,7 +582,7 @@
             var overflow = false;
 
             // CSS transforms rotate display but not the DOM element's height/width:
-            if (this.rotation % 180 === 0) {
+            if (this.controller.rotation % 180 === 0) {
                 overflow = ($nextPage.outerWidth() + $currentPage.outerWidth() + 10 >= $window.width());
             } else {
                 overflow = ($nextPage.outerHeight() + $currentPage.outerHeight() + 10 >= $window.height());
@@ -654,10 +655,11 @@
 
             if (this.seadragon) {
                 this.seadragon.close();
+                this.seadragon.destroy();
                 this.seadragon = null;
             }
 
-            $container.empty().hide();
+            $container.hide();
             $window.off("resize", this.onResize);
         };
 
@@ -666,12 +668,13 @@
 
             if (this.seadragon) {
                 this.seadragon.close();
+                this.seadragon.destroy();
                 this.seadragon = null;
             }
 
             // We'll work around Internet Explorer < 11's broken height:100% calculation
             // by displaying now to force the height to match the window:
-            $container.empty().show();
+            $container.show();
             this.onResize();
             $window.on("resize", this.onResize);
             this.update();
@@ -737,6 +740,14 @@
             this.seadragon.viewport.panBy(delta);
         }, this);
 
+        this.setRotation = $.proxy(function (degrees) {
+            if (!this.seadragon || !this.seadragon.viewport) {
+                return;
+            }
+
+            this.seadragon.viewport.setRotation(degrees);
+        });
+
         this.initializeSeadragon = function (dziUrl) {
             var seadragon = new OpenSeadragon({
                 id: $container.attr("id"),
@@ -773,6 +784,10 @@
                 this.zoomIn();
             }, this);
             seadragon.addHandler("open", initialZoom);
+
+            seadragon.addHandler("open", $.proxy(function () {
+                this.setRotation(this.controller.rotation);
+            }, this));
         };
 
         this.onKeydown = function (evt) {
