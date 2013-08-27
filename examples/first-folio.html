@@ -248,6 +248,8 @@
                 Modernizr.fullscreen = false;
             }
 
+            var bookmark = document.location.hash.match(/^#(\d+)\/(\d+)$/);
+
             var $window = $(window),
                 $viewer = $("#viewer").wdlViewer({
                     pageGroups: {"1": 461}, // List of groups and the last index value in each
@@ -281,6 +283,11 @@
 
                 $viewer.find("h1").css("max-width", $window.width() - 20);
             }).trigger("resize");
+
+            if (bookmark) {
+                console.log(bookmark);
+                $viewer.trigger("goto-page", [bookmark[1], bookmark[2]]);
+            }
         </script>
     </body>
 </html>

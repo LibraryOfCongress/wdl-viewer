@@ -230,11 +230,13 @@
                 Modernizr.fullscreen = false;
             }
 
-			function generateImageUrl(group, index, maxEdge) {
-				// These URLs need to be zero-padded:
-				var idx = ("0000" + (index - 1)).substr(-4);
-				return "http://lcweb2.loc.gov/service/rbc/rbc0001/2013/2013vollb40724/" + idx + "q.jpg"
-			}
+            function generateImageUrl(group, index, maxEdge) {
+                // These URLs need to be zero-padded:
+                var idx = ("0000" + (index - 1)).substr(-4);
+                return "http://lcweb2.loc.gov/service/rbc/rbc0001/2013/2013vollb40724/" + idx + "q.jpg"
+            }
+
+            var bookmark = document.location.hash.match(/^#(\d+)\/(\d+)$/);
 
             var $window = $(window),
                 $viewer = $("#viewer").wdlViewer({
@@ -267,6 +269,11 @@
 
                 $viewer.find("h1").css("max-width", $window.width() - 20);
             }).trigger("resize");
+
+            if (bookmark) {
+                console.log(bookmark);
+                $viewer.trigger("goto-page", [bookmark[1], bookmark[2]]);
+            }
         </script>
     </body>
 </html>
