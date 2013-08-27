@@ -365,6 +365,8 @@
         } else {
             this.openPageView();
         }
+
+        this.updateViewer();
     }
 
     ViewController.prototype = {
