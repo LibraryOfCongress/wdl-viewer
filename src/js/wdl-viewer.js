@@ -268,7 +268,7 @@
         $viewer.on("goto-previous-page", $.proxy(this.goToPreviousPage, this));
 
         $viewer.on("goto-page", function (evt, newGroup, newIndex) {
-            controller.setGroup(newGroup, newIndex);
+            controller.setGroup(parseInt(newGroup, 10), parseInt(newIndex, 10));
         });
 
         $viewer.on("page-changed", $.proxy(function () {
