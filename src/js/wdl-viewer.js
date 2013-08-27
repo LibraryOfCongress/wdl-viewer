@@ -1,13 +1,16 @@
-/*global jQuery: true, window: true, Image: true, gettext: true, OpenSeadragon:true */
+/*global jQuery: true, window: true, Image: true, OpenSeadragon:true */
 
 (function ($) {
     "use strict";
     var $window = $(window),
         placeholderImage = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
+    var gettext = window.gettext;
     if (typeof(gettext) == "undefined") {
         // intentionally does nothing but avoids breaking if JS I18N dict fails to load
-        window.gettext = function (i) { return i; };
+        /* jshint -W020 */
+        gettext = function (i) { return i; };
+        /* jshint -W020 */
     }
 
     function isFullScreen() {
