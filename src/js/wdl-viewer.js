@@ -1,4 +1,4 @@
-/*global jQuery: true, window: true, Image: true, OpenSeadragon:true */
+/*global window: true, Modernizr:true, jQuery: true, Image: true, OpenSeadragon:true */
 
 (function ($) {
     "use strict";
@@ -119,19 +119,21 @@
 
         // Add toolbar features which only work with JavaScript:
 
-        $('<button class="rotate" type="button">↺</button>')
-            .attr("title", gettext('Rotate Left'))
-            .appendTo("footer .toolbar .controls")
-            .on("click", $.proxy(function () {
-                this.rotate(true);
-            }, this));
+        if (Modernizr.canvas || Modernizr.csstransforms) {
+            $('<button class="requires-rotation" type="button">↺</button>')
+                .attr("title", gettext('Rotate Left'))
+                .appendTo("footer .toolbar .controls")
+                .on("click", $.proxy(function () {
+                    this.rotate(true);
+                }, this));
 
-        $('<button class="rotate" type="button">↻</button>')
-            .attr("title", gettext('Rotate Right'))
-            .appendTo("footer .toolbar .controls")
-            .on("click", $.proxy(function () {
-                this.rotate();
-            }, this));
+            $('<button class="requires-rotation" type="button">↻</button>')
+                .attr("title", gettext('Rotate Right'))
+                .appendTo("footer .toolbar .controls")
+                .on("click", $.proxy(function () {
+                    this.rotate();
+                }, this));
+        }
 
         if (this.seadragonView) {
             $('<button id="toggle-seadragon" type="button">' + gettext('Zoom') + '</button>')

@@ -81,6 +81,18 @@
                                         <kbd>Page Up</kbd>, <kbd>shift+spacebar</kbd>, <kbd>k</kbd>
                                     </td>
                                 </tr>
+                                <tr class="requires-rotation">
+                                    <th>Rotate Left</th>
+                                    <td>
+                                        <kbd>alt+left arrow</kbd>
+                                    </td>
+                                </tr>
+                                <tr class="requires-rotation">
+                                    <th>Rotate Right</th>
+                                    <td>
+                                        <kbd>alt+right arrow</kbd>
+                                    </td>
+                                </tr>
                                 <tr>
                                     <th>
                                         Switch to grid view
@@ -285,7 +297,6 @@
             }).trigger("resize");
 
             if (bookmark) {
-                console.log(bookmark);
                 $viewer.trigger("goto-page", [bookmark[1], bookmark[2]]);
             }
         </script>

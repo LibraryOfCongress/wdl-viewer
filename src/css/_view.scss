@@ -427,7 +427,11 @@
         display: none;
     }
 
-    #viewer[data-active-view=grid] .rotate {
+    #viewer[data-active-view=grid] .requires-rotation,
+    .no-csstransforms & #viewer[data-active-view=page] .requires-rotation,
+    .no-canvas & #viewer[data-active-view=seadragon] .requires-rotation,
+    .no-canvas & #help .requires-rotation
+    {
         display: none;
     }
 }
