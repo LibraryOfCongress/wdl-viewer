@@ -766,7 +766,9 @@
                 return;
             }
 
-            this.seadragon.viewport.setRotation(degrees);
+            // Until https://github.com/openseadragon/openseadragon/issues/194 lands we can't support
+            // arbitrary rotation:
+            this.seadragon.viewport.setRotation(degrees - (degrees % 90));
         });
 
         this.initializeSeadragon = function (dziUrl) {
