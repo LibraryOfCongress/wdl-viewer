@@ -8,7 +8,7 @@
             <meta http-equiv="imagetoolbar" content="no">
         <![endif]-->
         <title>
-            WDL Viewer example:
+            WDL Viewer example: Epytoma Ioa[n]nis de Mo[n]te Regio in Almagestu[m] Ptolomei
         </title>
         <link rel="stylesheet" href="../build/wdl-viewer.css" type="text/css">
         <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -203,32 +203,44 @@
 
                             var lastTimeoutId;
 
-                            $("#pages").hammer()
-                                .on("tap", function (evt) {
-                                    if (evt.gesture.center.pageX < 50) {
-                                        $viewer.trigger("goto-previous-page");
-                                    } else if ($(window).width() - evt.gesture.center.pageX < 50) {
-                                        $viewer.trigger("goto-next-page");
-                                    } else {
-                                        $viewer.trigger("toggle-chrome");
-                                    }
+                        var viewer = document.getElementById("viewer");
+                        // By default, touchmove events as fired when attempting rotation can cause Mobile
+                        // Safari to "bounce" the viewport, displaying the standard gray background, which is
+                        // quite unpleasant in the middle of a rotation:
+                        document.ontouchmove = function(evt) {
+                            if (viewer.dataset.activeView != "grid") {
+                                evt.preventDefault();
+                            }
+                        }
+
+                        $("#pages").hammer()
+                            .on("tap", function (evt) {
+                                if (evt.gesture.center.pageX < 50) {
+                                    $viewer.trigger("goto-previous-page");
+                                } else if ($(window).width() - evt.gesture.center.pageX < 50) {
+                                    $viewer.trigger("goto-next-page");
+                                } else {
+                                    $viewer.trigger("toggle-chrome");
+                                }
 
                                     if (lastTimeoutId) {
                                         window.clearTimeout(lastTimeoutId);
                                     }
 
-                                    lastTimeoutId = window.setTimeout(function () {
-                                        $viewer.trigger("hide-chrome");
-                                    }, 6000);
-                                })
-                                .on("pinchout", function (evt) {
-                                    if (Math.abs(evt.gesture.rotation) < 10 && evt.gesture.distance > 0.5) {
-                                        $viewer.trigger("open-seadragon");
-                                    }
-                                })
-                                .on("rotate", function (evt) {
-                                    $viewer.trigger("set-rotation", evt.gesture.rotation);
-                                });
+                                lastTimeoutId = window.setTimeout(function () {
+                                    $viewer.trigger("hide-chrome");
+                                }, 6000);
+                            })
+                            .on("pinchout", function (evt) {
+                                if (Math.abs(evt.gesture.rotation) < 20 && evt.gesture.scale > 3.0) {
+                                    $viewer.trigger("open-seadragon");
+                                    evt.preventDefault();
+                                }
+                            })
+                            .on("rotate", function (evt) {
+                                $viewer.trigger("set-rotation", evt.gesture.rotation);
+                                evt.preventDefault();
+                            });
 
                             $viewer.on("page-changed", function () {
                                 $viewer.trigger("hide-chrome");
