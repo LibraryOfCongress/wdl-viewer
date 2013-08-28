@@ -273,6 +273,20 @@
             controller.setGroup(parseInt(newGroup, 10), parseInt(newIndex, 10));
         });
 
+        /*
+            We offer two convenience functions for event handlers which increment the current rotation as
+            well as a way to set the current rotation directly:
+        */
+        $viewer.on("rotate-left", function () {
+            controller.rotate(true);
+        });
+        $viewer.on("rotate-right", function () {
+            controller.rotate();
+        });
+        $viewer.on("set-rotation", function (evt, degrees) {
+            controller.setRotation(degrees);
+        });
+
         $viewer.on("page-changed", $.proxy(function () {
             $groupControl.val(this.currentGroup);
             $indexControl.val(this.currentIndex);
@@ -502,7 +516,10 @@
             this.viewer.attr("data-active-view", "seadragon").trigger("show-footer");
         },
         rotate: function (reverse) {
-            this.rotation += reverse ? -90 : 90;
+            this.setRotation(this.rotation + (reverse ? -90 : 90));
+        },
+        setRotation: function (degrees) {
+            this.rotation = degrees;
             if (this.activeView && this.activeView.setRotation) {
                 this.activeView.setRotation(this.rotation);
             }
