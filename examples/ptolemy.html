@@ -194,9 +194,7 @@
                 },
                 {
                     test: Modernizr.touch,
-                    yep: [
-                        '//cdnjs.cloudflare.com/ajax/libs/hammer.js/1.0.5/hammer.min.js'
-                    ],
+                    yep: ['//cdnjs.cloudflare.com/ajax/libs/hammer.js/1.0.5/jquery.hammer.min.js'],
                     complete: function(id, testResult) {
                         if (Modernizr.touch && typeof(jQuery.fn.hammer) !== "undefined") {
                             $(window).hammer()
@@ -223,8 +221,13 @@
                                         $viewer.trigger("hide-chrome");
                                     }, 6000);
                                 })
-                                .on("pinchout", function () {
-                                    $viewer.trigger("open-seadragon");
+                                .on("pinchout", function (evt) {
+                                    if (Math.abs(evt.gesture.rotation) < 10 && evt.gesture.distance > 0.5) {
+                                        $viewer.trigger("open-seadragon");
+                                    }
+                                })
+                                .on("rotate", function (evt) {
+                                    $viewer.trigger("set-rotation", evt.gesture.rotation);
                                 });
 
                             $viewer.on("page-changed", function () {
