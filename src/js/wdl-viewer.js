@@ -487,15 +487,20 @@
             }
         },
         openPageView: function () {
-            if (this.activeView) {
+            if (this.activeView == this.pageView) {
+                return;
+            } else if (this.activeView) {
                 this.activeView.hide();
             }
+
             this.activeView = this.pageView;
             this.pageView.show();
             this.viewer.attr("data-active-view", "page").trigger("show-footer");
         },
         openGridView: function () {
-            if (this.activeView) {
+            if (this.activeView == this.gridView) {
+                return;
+            } else if (this.activeView) {
                 this.activeView.hide();
             }
             this.activeView = this.gridView;
@@ -503,11 +508,9 @@
             this.viewer.attr("data-active-view", "grid").trigger("hide-footer");
         },
         openSeadragonView: function () {
-            if (!this.seadragonView) {
+            if (!this.seadragonView || this.activeView == this.seadragonView) {
                 return;
-            }
-
-            if (this.activeView) {
+            } else if (this.activeView) {
                 this.activeView.hide();
             }
 
