@@ -1,9 +1,13 @@
 SPRITE_ROOT=src/img/sprites
 
-all: jshint sprites build/wdl-viewer.css
+all: openseadragon jshint static
 
 clean:
 	rm -rf build/wdl-viewer.*
+	cd external/openseadragon && grunt clean
+
+openseadragon:
+	cd external/openseadragon && grunt
 
 jshint:
 	jshint src/js/wdl-viewer.js
@@ -11,7 +15,7 @@ jshint:
 tidy:
 	tidy-html5 -utf8 -m -quiet --tidy-mark no --wrap 0 --indent yes --indent-spaces 4 examples/*.html
 
-sprites:
+static:
 	mkdir -p ${SPRITE_ROOT}/seadragon-controls/
 	for f in external/openseadragon/images/*_{rest,hover,pressed}.png; do \
 		DEST_FILE=$${f##*/}; \
@@ -21,8 +25,5 @@ sprites:
 	done
 	compass compile
 
-build/wdl-viewer.css:
-	compass compile
-
-runserver:
+runserver: all
 	python -m SimpleHTTPServer
