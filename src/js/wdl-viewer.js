@@ -432,21 +432,21 @@
         updateViewer: function () {
             // Update next / previous links:
             if (this.currentIndex < this.maxIndex) {
-                $(".page.next")
+                $(".toolbar .page.next")
                     .removeClass("disabled")
                     .attr("href", this.generatePageUrl(this.currentGroup, this.currentIndex + 1));
             } else {
-                $(".page.next")
+                $(".toolbar .page.next")
                     .addClass("disabled")
                     .removeAttr("href");
             }
 
             if (this.currentIndex > 1) {
-                $(".page.previous")
+                $(".toolbar .page.previous")
                     .removeClass("disabled")
                     .attr("href", this.generatePageUrl(this.currentGroup, this.currentIndex - 1));
             } else {
-                $(".page.previous")
+                $(".toolbar .page.previous")
                     .addClass("disabled")
                     .removeAttr("href");
             }
