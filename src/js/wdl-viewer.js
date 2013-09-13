@@ -118,15 +118,15 @@
         // Add toolbar features which only work with JavaScript:
 
         if (Modernizr.canvas || Modernizr.csstransforms) {
-            $('<button class="requires-rotation" type="button">↺</button>')
-                .attr("title", gettext('Rotate Left'))
+            $('<button id="rotate-left" class="requires-rotation" type="button"></button>')
+                .text(gettext("Rotate Left"))
                 .appendTo("footer .toolbar .controls")
                 .on("click", $.proxy(function () {
                     this.rotate(true);
                 }, this));
 
-            $('<button class="requires-rotation" type="button">↻</button>')
-                .attr("title", gettext('Rotate Right'))
+            $('<button id="rotate-right" class="requires-rotation" type="button"></button>')
+                .text(gettext("Rotate Right"))
                 .appendTo("footer .toolbar .controls")
                 .on("click", $.proxy(function () {
                     this.rotate();
