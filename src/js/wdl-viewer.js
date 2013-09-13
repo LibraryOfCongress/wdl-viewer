@@ -1,4 +1,4 @@
-/*global window: true, Modernizr:true, jQuery: true, Image: true, OpenSeadragon:true */
+/*global navigator, window, document, Element, Modernizr, jQuery, Image, OpenSeadragon */
 
 (function ($) {
     "use strict";
@@ -8,9 +8,7 @@
     var gettext = window.gettext;
     if (typeof(gettext) == "undefined") {
         // intentionally does nothing but avoids breaking if JS I18N dict fails to load
-        /* jshint -W020 */
         gettext = function (i) { return i; };
-        /* jshint -W020 */
     }
 
     function isFullScreen() {
@@ -534,12 +532,10 @@
         this.config = config;
 
         var $pages = $("#pages"),
-            $currentPage = $pages.find(".current img").first(),
-            $nextPage = $('<img>').hide(),
+            $currentPage = $pages.find("img.current").first(),
+            $nextPage = $('<img>').hide().addClass("next").appendTo($pages),
             previousImages = [new Image(), new Image(), new Image()],
             nextImages = [new Image(), new Image(), new Image()];
-
-        $('<div class="page">').addClass("next").append($nextPage).appendTo($pages);
 
         this.hide = function () {
             $container.hide();
