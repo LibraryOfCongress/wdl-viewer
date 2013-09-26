@@ -338,15 +338,11 @@
 
         var headerHeight = $header.height();
         $viewer.on("mousemove", function (evt) {
-            if (evt.pageY > headerHeight) {
-                return;
-            } else if (headerHidden) {
+            if (evt.pageY < headerHeight * 2) {
                 $viewer.trigger("show-header");
+            } else if (evt.pageY > headerHeight * 3) {
+                $viewer.trigger("hide-header");
             }
-        });
-
-        $header.on("mouseout", function () {
-            $viewer.trigger("hide-header");
         });
 
         $viewer.on("hide-chrome", function () {
