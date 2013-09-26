@@ -446,7 +446,7 @@
                     .removeAttr("href");
             }
 
-            window.history.pushState(
+            window.history.replaceState(
                 {
                     group: this.currentGroup,
                     index: this.currentIndex
