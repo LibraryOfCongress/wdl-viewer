@@ -94,15 +94,6 @@
             $groupControl.parent().hide();
         }
 
-        this.pageView = new PageView(this, $pages, config);
-
-        if (config.dziUrlTemplate) {
-            this.seadragonView = new SeadragonView(this, $seadragon, config);
-        }
-
-        this.gridView = new GridView(this, $grid, config);
-        this.activeView = this.pageView;
-
         if ($.isFunction(config.imageUrlTemplate)) {
             this.generateImageUrl = config.imageUrlTemplate;
         }
@@ -115,8 +106,16 @@
             this.generateDziUrl = config.dziUrlTemplate;
         }
 
-        // Add toolbar features which only work with JavaScript:
+        this.pageView = new PageView(this, $pages, config);
 
+        if (config.dziUrlTemplate) {
+            this.seadragonView = new SeadragonView(this, $seadragon, config);
+        }
+
+        this.gridView = new GridView(this, $grid, config);
+        this.activeView = this.pageView;
+
+        // Add toolbar features which only work with JavaScript:
         if (Modernizr.canvas || Modernizr.csstransforms) {
             $('<button id="rotate-left" class="requires-rotation" type="button"></button>')
                 .text(gettext("Rotate Left"))
