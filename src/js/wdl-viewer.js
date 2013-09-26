@@ -532,10 +532,14 @@
         this.config = config;
 
         var $pages = $("#pages"),
-            $currentPage = $pages.find("img.current").first(),
-            $nextPage = $('<img>').hide().addClass("next").appendTo($pages),
+            $currentPage = $pages.find(".current img").first(),
+            $nextPage = $('<img>'),
             previousImages = [new Image(), new Image(), new Image()],
             nextImages = [new Image(), new Image(), new Image()];
+
+        $currentPage.parent().clone().empty().removeClass("current").addClass("next")
+            .appendTo($pages)
+            .append($nextPage);
 
         this.hide = function () {
             $container.hide();
