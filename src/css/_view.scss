@@ -74,7 +74,8 @@
 
                 @media screen and (max-width: $breakSmall) {
                     padding: 0;
-                    font-size: inherit;
+                    height: 18px;
+                    font-size: 16px;
                 }
             }
         }
