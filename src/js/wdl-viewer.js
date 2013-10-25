@@ -602,9 +602,9 @@
 
             // CSS transforms rotate display but not the DOM element's height/width:
             if (this.controller.rotation % 180 === 0) {
-                overflow = ($nextPage.outerWidth() + $currentPage.outerWidth() + 10 >= $window.width());
+                overflow = ($nextPage.outerWidth() + $currentPage.outerWidth() + 20 >= $window.width());
             } else {
-                overflow = ($nextPage.outerHeight() + $currentPage.outerHeight() + 10 >= $window.height());
+                overflow = ($nextPage.outerHeight() + $currentPage.outerHeight() + 20 >= $window.height());
             }
 
             if (lastPage || overflow) {
