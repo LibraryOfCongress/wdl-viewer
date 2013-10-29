@@ -446,6 +446,8 @@
                     .removeAttr("href");
             }
 
+            this.viewer.data({group: this.currentGroup, index: this.currentIndex});
+
             window.history.replaceState(
                 {
                     group: this.currentGroup,
