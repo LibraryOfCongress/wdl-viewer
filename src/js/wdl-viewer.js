@@ -890,12 +890,15 @@
         };
 
         this.update = function () {
-            // Note switch from page number to zero-based index:
-            var $currentPage = $container.scrollTop(0).children("div").eq(controller.currentIndex - 1);
+            var $pages = $container.scrollTop(0).children("div"),
+                // Note switch from page number to zero-based index:
+                $currentPage = $pages.eq(controller.currentIndex - 1);
+
             /* jshint -W101 */
             $container.scrollTop($currentPage.offset().top - ($window.height() / 2) + ($currentPage.height() / 2));
             /* jshint +W101 */
 
+            $pages.not($currentPage).filter(".current").removeClass("current");
             $currentPage.addClass("current");
 
             $container.on("scroll", gridScrollHandler);
