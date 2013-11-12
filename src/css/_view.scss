@@ -248,6 +248,13 @@
                 }
             }
 
+            // This can't be a simple & parent selector because we need to target the element with the dir
+            // flag directly until the CSS :dir() selector lands…
+            &[dir=rtl] #pages > .page + .page {
+                margin-left: 0;
+                margin-right: 10px;
+            }
+
             #seadragon {
                 .control {
                     width: seadragon-controls-sprite-width(home);
