@@ -17,6 +17,24 @@ $linkColor: #369;
 // Structural colors
 $viewportBorderColor: #69c;
 
+// Controls
 $buttonHeight: 28px;
+$selectedItemOutlineColor: #9C0;
+
+// Search
+$searchHighlightColor: rgb(128, 128, 255);
+
+@mixin search-result-highlight {
+    // This is used for the various places where we highlight regions of an image by overlaying a DIV
+    position: absolute;
+    z-index: 200;
+
+    @include opacity(0.3);
+
+    @include border-radius(20%);
+
+    background-color: $searchHighlightColor;
+    @include box-shadow(0 0 4px 8px $searchHighlightColor);
+}
 
 @import "view";
