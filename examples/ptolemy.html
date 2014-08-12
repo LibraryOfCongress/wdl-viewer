@@ -181,8 +181,12 @@
                         // Slightly wonky double check but callback: won't fire if you don't load anything
                         // and this keeps polyfills in one place:
                         if (!Modernizr.history) {
-                            window.history.pushState = function (state, title, url) {
-                                document.location.href = url;
+                            window.history.replaceState = function (state, title, url) {
+                                if (document.location.href == url || document.location.pathname == url) {
+                                    return;
+                                } else {
+                                    document.location.href = url;
+                                }
                             }
                         } else {
                             $(".next.page").on("click", function () {
