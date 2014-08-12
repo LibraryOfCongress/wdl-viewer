@@ -274,13 +274,6 @@
                 },
             ]);
 
-            if (navigator.userAgent.match(/Chrome/)) {
-                // Suppress fullscreen mode on Chrome until they close
-                // https://code.google.com/p/chromium/issues/detail?id=138324
-                $('html').removeClass("fullscreen").addClass("no-fullscreen");
-                Modernizr.fullscreen = false;
-            }
-
             var bookmark = document.location.hash.match(/^#(\d+)\/(\d+)$/);
 
             var $window = $(window),
