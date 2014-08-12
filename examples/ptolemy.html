@@ -188,6 +188,12 @@
                                     document.location.href = url;
                                 }
                             }
+
+                            // Force page navigation rather than simply updating the current anchor:
+                            $('.next.page, .previous.page').on('click', function (evt) {
+                                document.location.href = this.href;
+                                document.location.reload();
+                            })
                         } else {
                             $(".next.page").on("click", function () {
                                 $viewer.trigger("goto-next-page"); return false;
