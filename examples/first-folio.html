@@ -179,6 +179,8 @@
         <script src="../external/openseadragon/build/openseadragon/openseadragon.js"></script>
         <script src="../src/js/wdl-viewer.js"></script>
         <script>
+            Modernizr.addTest('fullscreen', !!(Modernizr.prefixed('exitFullscreen', document, false) || Modernizr.prefixed('cancelFullScreen', document, false)));
+
             Modernizr.load([
                 {
                     test: Modernizr.inputtypes.range && Modernizr.history,
