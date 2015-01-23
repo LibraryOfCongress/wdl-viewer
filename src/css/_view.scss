@@ -1,21 +1,89 @@
-@import "compass";
-@import "compass/css3/user-interface";
+@import 'compass';
+@import 'compass/css3/user-interface';
+
+$wdl-viewer-breakpoint-small: 480px !default;
+$wdl-viewer-breakpoint-medium: 1100px !default;
+$wdl-viewer-breakpoint-small-max: ($wdl-viewer-breakpoint-medium - 1px);
+
+$wdl-viewer-text-color: #aaa !default;
+$wdl-viewer-bg: #000 !default;
+
+$wdl-viewer-control-height: 28px !default;
+$wdl-viewer-control-min-width: $wdl-viewer-control-height !default;
+$wdl-viewer-control-vertical-margin: 2px !default;
+$wdl-viewer-control-horizontal-margin: 4px !default;
+
+$wdl-viewer-toolbar-text-color: $wdl-viewer-text-color !default;
+$wdl-viewer-toolbar-link-color: lighten($wdl-viewer-text-color, 10%) !default;
+$wdl-viewer-toolbar-border-width: 2px !default;
+$wdl-viewer-toolbar-border-color: lighten($wdl-viewer-bg, 50%) !default;
+$wdl-viewer-toolbar-background-color: lighten($wdl-viewer-bg, 20%) !default;
+$wdl-viewer-toolbar-height: $wdl-viewer-control-height + $wdl-viewer-toolbar-border-width !default;
+$wdl-viewer-toolbar-font-size: 16px !default;
+$wdl-viewer-toolbar-line-height: floor(($wdl-viewer-toolbar-font-size * 1.8)) !default;
+
+$wdl-viewer-control-color: darken($wdl-viewer-text-color, 15%) !default;
+$wdl-viewer-control-hover-color: $wdl-viewer-text-color !default;
+$wdl-viewer-control-bg: lighten($wdl-viewer-bg, 10%) !default;
+
+$wdl-viewer-control-border-color: lighten($wdl-viewer-bg, 30%) !default;
+$wdl-viewer-control-border-width: 2px !default;
+$wdl-viewer-control-border-radius: 3px !default;
+$wdl-viewer-control-hover-border-color: mix($wdl-viewer-toolbar-border-color, rgb(0, 0, 255), 75%) !default;
+
+$wdl-viewer-current-page-outline-color: #9c0 !default;
+$wdl-viewer-search-hit-color: #88f !default;
+
+// Overrides for the small breakpoint:
+$wdl-viewer-small-control-border-width: 1px !default;
+$wdl-viewer-small-control-height: floor(.7 * $wdl-viewer-control-height) !default;
+$wdl-viewer-small-toolbar-border-width: 1px !default;
+$wdl-viewer-small-toolbar-height: $wdl-viewer-small-control-height + $wdl-viewer-small-toolbar-border-width !default;
+$wdl-viewer-small-toolbar-font-size: floor(.7 * $wdl-viewer-toolbar-font-size) !default;
+$wdl-viewer-small-toolbar-line-height: floor(.7 * $wdl-viewer-toolbar-line-height) !default;
 
 .wdl-viewer {
-    min-width: 320px;
-    min-height: 320px;
+    // Core viewport styles:
+    margin: 0 !important;
+    padding: 0 !important;
 
-    height: 100%;
+    min-width: 320px;
+    min-width: 100vw;
+
+    min-height: 320px;
+    min-height: 100vh;
 
     overflow: hidden;
 
+    // Basic text styles:
     font-family: sans-serif;
+    background-color: $wdl-viewer-bg;
+    color: $wdl-viewer-text-color;
 
-    background-color: black; // Set this here so it'll fill the viewport in all zoom/pan scenarios
-    color: $mutedTextColor;
-
+    // Basic reset:
     * {
         @include box-sizing(border-box);
+
+        margin: 0;
+        padding: 0;
+    }
+
+    label {
+        font-weight: inherit;
+    }
+
+    // Viewport sizing:
+
+    &,
+    #viewer,
+    #viewport,
+    #grid {
+        height: 100%;
+        height: 100vh;
+        width: 100%;
+        width: 100vw;
+        max-height: 100vh;
+        max-width: 100vw;
     }
 
     .hidden {
@@ -23,394 +91,461 @@
     }
 
     #viewer {
-        background-color: black; // Set this here so it'll fill the viewport in all zoom/pan scenarios
-
-        height: 100%;
-        width: 100%;
+        background-color: $wdl-viewer-bg; // Set this here so it'll fill the viewport in all zoom/pan scenarios
 
         font-size: large;
-        @media screen and (max-width: $breakMedium) {
+        @media screen and (max-width: $wdl-viewer-breakpoint-medium) {
             font-size: small;
         }
 
         text-align: center;
+    }
 
-        header, footer {
-            z-index: 10;
-            width: 100%;
+    // Rules common to both the header & footer
+    header,
+    footer {
+        display: table;
+        z-index: 10;
+        width: 100%;
 
-            background-color: $pageBackgroundColor;
-            background-color: transparentize($pageBackgroundColor, 0.1);
+        height: $wdl-viewer-toolbar-height;
+        @media screen and (max-width: $wdl-viewer-breakpoint-small) {
+            height: $wdl-viewer-small-toolbar-height;
+        }
 
-            > nav {
-                display: block;
-                border: 0px solid #369;
+        color: $wdl-viewer-toolbar-text-color;
+
+        background-color: $wdl-viewer-toolbar-background-color;
+        background-color: transparentize($wdl-viewer-toolbar-background-color, .1);
+
+        > nav {
+            display: table-row;
+
+            > * {
+                display: table-cell;
+                vertical-align: middle;
+
+                font-size: $wdl-viewer-toolbar-font-size;
+                line-height: $wdl-viewer-toolbar-line-height;
 
                 > * {
                     display: inline-block;
-                    overflow: hidden;
+                    margin: $wdl-viewer-control-vertical-margin $wdl-viewer-control-horizontal-margin;
 
-                    font-size: 16px;
-
-                    @media screen and (max-width: $breakSmall) {
-                        font-size: 12px;
-                        line-height: 18px;
-                        height: 20px;
-                    }
-
-                    &.hidden {
-                        display: none; // Otherwise display:inline-block will clobber this
+                    @media screen and (max-width: $wdl-viewer-breakpoint-small) {
+                        margin: 1px 2px;
                     }
                 }
-            }
 
-            a {
-                color: $viewportBorderColor;
-            }
+                @media screen and (max-width: $wdl-viewer-breakpoint-small) {
+                    font-size: $wdl-viewer-small-toolbar-font-size;
+                    line-height: $wdl-viewer-small-toolbar-line-height;
+                    height: $wdl-viewer-small-control-height;
+                }
 
-            button {
-                min-width: 1.4em;
-                margin: 1px 2px;
-
-                @media screen and (max-width: $breakSmall) {
-                    padding: 0;
-                    height: 18px;
-                    font-size: 16px;
+                &.hidden {
+                    display: none; // Otherwise display:inline-block will clobber this
                 }
             }
         }
 
-        header {
-            position: fixed;
-            top: 0;
+        a {
+            color: $wdl-viewer-toolbar-link-color;
+        }
 
-            > nav {
-                border-bottom-width: 2px;
+        button,
+        input,
+        label,
+        select,
+        .control {
+            display: inline-block;
+            vertical-align: middle;
 
-                text-align: center;
-
-                height: 26px;
-
-                > h1 {
-                    font-family: inherit;
-                    font-weight: bolder;
-                    max-width: 90%;
-                    white-space: nowrap;
-                    text-overflow: ellipsis;
-                    padding: 4px;
-
-                    a {
-                        color: lighten($mutedTextColor, 15%);
-                    }
-                }
-
-                > form {
-                    margin: 0 auto;
-                }
+            @media screen and (max-width: $wdl-viewer-breakpoint-small) {
+                // This looks better with the tight control packing:
+                vertical-align: top;
             }
         }
 
-        footer {
-            position: fixed;
-            bottom: 0;
+        input {
+            line-height: floor(($wdl-viewer-toolbar-font-size * 1.25));
 
-            height: 30px;
+            @media screen and (max-width: $wdl-viewer-breakpoint-small) {
+                line-height: inherit;
+            }
+        }
 
-            > nav {
-                border-top-width: 2px;
-                padding-top: 1px;
+        select {
+            @media screen and (max-width: $wdl-viewer-breakpoint-small) {
+                color: #000;
+            }
+        }
 
-                > * {
-                    height: $buttonHeight;
-                    vertical-align: baseline;
-                }
+        button,
+        a.control {
+            display: inline-block;
 
-                // Range input slider
-                #index, #fd-slider-index {
-                    display: inline-block;
-                    width: 240px;
+            height: $wdl-viewer-control-height;
+            min-width: $wdl-viewer-control-min-width;
 
-                    .no-history & {
-                        display: none;
-                    }
+            padding: 0 .3em;
 
-                    @media screen and (max-width: $breakMedium) {
-                        display: none;
-                    }
-                }
+            color: $wdl-viewer-control-color;
+            background-color: $wdl-viewer-control-bg;
 
-                #index {
-                    height: $buttonHeight;
-                    vertical-align: middle;
-                }
+            border: solid $wdl-viewer-control-border-color $wdl-viewer-control-border-width;
+            @include border-radius($wdl-viewer-control-border-radius);
 
-                // Current page / goto control:
-                .current-index {
-                    width: 3em;
-                    @media screen and (max-width: $breakSmall) {
-                        width: 2em;
-                    }
-                }
-
-                .max-index, .max-index-label {
-                    @media screen and (max-width: $breakSmall) {
-                        display: none;
-                    }
-                }
-
-                /* fdSlider polyfill adjustments */
-                #fd-slider-index {
-                    vertical-align: top;
-                    height: $buttonHeight;
-                }
-
-                #index.fd-form-element-hidden {
-                    display: none; // We have a default display:inline-block which is more specific
-                    // See https://bugzilla.mozilla.org/show_bug.cgi?id=872351
-                    height: 0;
-                    width: 0;
-                }
-
-                .controls button {
-                    height: $buttonHeight;
-                }
+            &:hover,
+            &:focus,
+            &.active {
+                color: $wdl-viewer-control-hover-color;
+                border-color: $wdl-viewer-control-hover-border-color;
+                text-decoration: none;
             }
 
-            .toolbar {
-                // Since we have a fixed height, we can't allow wrapping buttons off of the display:
-                white-space: nowrap;
+            @media screen and (max-width: $wdl-viewer-breakpoint-small) {
+                padding: 0;
+                height: $wdl-viewer-small-control-height;
+                font-size: ceil(.6 * $wdl-viewer-small-control-height);
+                border-width: $wdl-viewer-small-control-border-width;
+            }
 
-                @include user-select(none);
-
-                @media screen and (max-width: $breakSmall) {
-                    // Hide the second back to item link on very small displays:
-                    .item-detail-nav {
-                        display: none;
-                    }
-                }
-
-                .item-detail-nav a:before {
-                    content: "←";
-                }
-
-                .page {
-                    &.disabled {
-                        color: $mutedTextColor;
-                        text-decoration: none;
-                        cursor: default;
-                    }
-
-                    &.next:after {
-                        content: "→";
-                    }
-
-                    &.previous:before {
-                        content: "←";
-                    }
-
-                    @media screen and (max-width: $breakSmall) {
-                        display: none;
-                    }
-                }
-
-                .no-fullscreen & #toggle-fullscreen {
+            @media screen and (max-width: $wdl-viewer-breakpoint-small-max) {
+                .title {
                     display: none;
                 }
             }
+
+            @media screen and (min-width: $wdl-viewer-breakpoint-medium) {
+                .title {
+                    padding: 0 .3em;
+                }
+            }
+        }
+    }
+
+    header {
+        position: fixed;
+        top: 0;
+
+        border-bottom: $wdl-viewer-toolbar-border-width solid $wdl-viewer-toolbar-border-color;
+        @media screen and (max-width: $wdl-viewer-breakpoint-small) {
+            border-bottom-width: $wdl-viewer-small-toolbar-border-width;
         }
 
-        #viewport {
-            display: table;
+        > nav {
+            text-align: center;
 
-            // n.b. these should be 100vh/100vw but those are buggy on all WebKit browsers
-            width: 100%;
-            height: 100%;
+            > h1 {
+                max-width: 90%;
+                max-width: 90vw;
+
+                padding: 0 4px;
+
+                font-family: inherit;
+
+                font-size: floor($wdl-viewer-control-height * .6);
+                @media screen and (max-width: $wdl-viewer-breakpoint-small) {
+                    font-size: floor($wdl-viewer-small-control-height * .6);
+                }
+
+                font-weight: bold;
+
+                text-overflow: ellipsis;
+                white-space: nowrap;
+
+                a {
+                    font-weight: bold;
+                }
+            }
+
+            > form {
+                margin: 0 auto;
+            }
+        }
+    }
+
+    footer {
+        position: fixed;
+        bottom: 0;
+
+        border-top: $wdl-viewer-toolbar-border-width solid $wdl-viewer-toolbar-border-color;
+        @media screen and (max-width: $wdl-viewer-breakpoint-small) {
+            border-top-width: $wdl-viewer-small-toolbar-border-width;
+        }
+
+        > nav {
+            // Range input slider
+            #index,
+            #fd-slider-index {
+                width: 240px;
+
+                .no-history & {
+                    display: none;
+                }
+
+                @media screen and (max-width: $wdl-viewer-breakpoint-medium) {
+                    display: none;
+                }
+            }
+
+            // Current page / goto control:
+            .current-index {
+                width: 3em;
+                @media screen and (max-width: $wdl-viewer-breakpoint-small) {
+                    width: 2em;
+                }
+            }
+
+            .max-index,
+            .max-index-label {
+                @media screen and (max-width: $wdl-viewer-breakpoint-small) {
+                    display: none;
+                }
+            }
+
+            // fdSlider polyfill adjustments
+            #fd-slider-index {
+                height: $wdl-viewer-control-height;
+                vertical-align: top;
+            }
+
+            #index.fd-form-element-hidden {
+                display: none; // We have a default display:inline-block which is more specific
+                // See https://bugzilla.mozilla.org/show_bug.cgi?id=872351
+                height: 0;
+                width: 0;
+            }
+        }
+
+        .toolbar.footer {
+            // Since we have a fixed height, we can't allow wrapping buttons off of the display:
+            white-space: nowrap;
 
             @include user-select(none);
 
-            #pages {
-                display: table-cell;
-                vertical-align: middle;
-                padding: 0;
-
-                > .page {
-                    display: inline-block;
-                    position: relative;
-
-                    max-height: 100vh;
-                    max-width: 100vw;
-
-                    margin: 0;
-
-                    .highlighted {
-                        @include search-result-highlight;
-                    }
-                }
-
-                > .page + .page {
-                    margin-left: 10px;
+            @media screen and (max-width: $wdl-viewer-breakpoint-small) {
+                // Hide the second back to item link on very small displays:
+                .item-detail-nav {
+                    display: none;
                 }
             }
 
-            // This can't be a simple & parent selector because we need to target the element with the dir
-            // flag directly until the CSS :dir() selector lands…
-            &[dir=rtl] #pages > .page + .page {
-                margin-left: 0;
-                margin-right: 10px;
+            .item-detail-nav a:before {
+                content: '←';
             }
 
-            #seadragon {
-                .control {
-                    width: seadragon-controls-sprite-width(home);
-                    height: seadragon-controls-sprite-height(home);
+            .page {
+                &.disabled {
+                    color: $wdl-viewer-toolbar-text-color;
+                    text-decoration: none;
+                    cursor: default;
+                }
 
-                    margin: 0;
-                    margin-bottom: 32px; // TODO: calculate this from the footer height
-
-                    background-repeat: no-repeat;
-                    overflow: hidden;
-
-                    @include squish-text;
-
-                    text-decoration: none!important;
-
-                    .touch & {
-                        display: none;
-                    }
-
-                    &.zoom-in {
-                        @include seadragon-controls-sprite(zoomin);
-                    }
-                    &.zoom-out {
-                        @include seadragon-controls-sprite(zoomout);
-                    }
-                    &.zoom-full {
-                        @include seadragon-controls-sprite(fullpage);
-                    }
-                    &.home {
-                        @include seadragon-controls-sprite(home);
-                    }
-                    &.previous-page {
-                        @include seadragon-controls-sprite(previous);
-                        &:lang(ar) {
-                            @include seadragon-controls-sprite(next);
-                        }
-                    }
-                    &.next-page {
-                        @include seadragon-controls-sprite(next);
-                        &:lang(ar) {
-                            @include seadragon-controls-sprite(previous);
-                        }
-                    }
+                @media screen and (max-width: $wdl-viewer-breakpoint-small) {
+                    display: none;
                 }
             }
 
-            #grid {
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
+            .no-fullscreen & #toggle-fullscreen {
+                display: none;
+            }
+        }
+    }
 
-                overflow-x: hidden;
-                overflow-y: scroll;
-                -webkit-overflow-scrolling: touch;
+    #viewport {
+        display: table;
 
-                background-color: #111;
+        @include user-select(none);
 
-                padding: 30px 0px;
+        // This can't be a simple & parent selector because we need to target the element with the dir
+        // flag directly until the CSS :dir() selector lands…
+        &[dir=rtl] #pages > .page + .page {
+            margin-left: 0;
+            margin-right: 10px;
+        }
+    }
 
-                div {
-                    display: inline-block;
-                    height: 256px;
-                    width: 256px;
-                    overflow: hidden;
+    #pages {
+        display: table-cell;
+        padding: 0;
+        vertical-align: middle;
 
-                    line-height: 490px;
+        > .page {
+            display: inline-block;
+            position: relative;
 
-                    @media screen and (max-width: 600px) {
-                        height: 128px;
-                        width: 128px;
-                        line-height: 240px;
-                    }
+            .highlighted {
+                @include search-result-highlight;
+            }
 
-                    margin: 8px;
+            // sledgehammer around browsers inconsistently calculating 100% for .page img:
+            &,
+            img {
+                max-height: 100%;
+                max-height: 100vh;
 
-                    text-align: left;
-
-                    color: darken($mutedTextColor, 15%);
-
-                    // JavaScript will set background-url to the image, avoiding extra DOM elements and some
-                    // alignment bugs exposed based on the aspect ratio of a contained <img> within a row(?!)
-                    background-color: transparent;
-                    background-repeat: no-repeat;
-                    background-position: center;
-                    background-size: contain;
-
-                    &.hit {
-                        outline: solid $searchHighlightColor 2px;
-                    }
-
-                    &.current {
-                        outline: solid $selectedItemOutlineColor 2px;
-                    }
-                }
+                max-width: 100%;
+                max-width: 100vw;
             }
         }
 
-        #content-search {
-            position: fixed;
-            right: 0;
-            bottom: 28px;
+        > .page + .page {
+            margin-left: 10px;
+        }
+    }
 
-            padding: 2px;
 
-            background-color: $pageBackgroundColor;
-            background-color: transparentize($pageBackgroundColor, 0.2);
+    #seadragon {
+        .control {
+            height: seadragon-controls-sprite-height(home);
+            width: seadragon-controls-sprite-width(home);
 
-            border: 2px solid #369;
-            border-right-width: 0;
+            margin: 0;
+            margin-bottom: 32px; // TODO: calculate this from the footer height
 
-            > * {
-                display: inline-block;
-                vertical-align: middle;
-                margin: 0 4px;
+            overflow: hidden;
+
+            background-repeat: no-repeat;
+            text-decoration: none !important;
+
+            @include squish-text;
+
+            .touch & {
+                display: none;
             }
 
-            button {
-                height: 20px;
-                width: 20px;
+            &.zoom-in {
+                @include seadragon-controls-sprite(zoomin);
+            }
 
-                &.next:after {
-                    content: "→";
+            &.zoom-out {
+                @include seadragon-controls-sprite(zoomout);
+            }
+
+            &.zoom-full {
+                @include seadragon-controls-sprite(fullpage);
+            }
+
+            &.home {
+                @include seadragon-controls-sprite(home);
+            }
+
+            &.previous-page {
+                @include seadragon-controls-sprite(previous);
+
+                &:lang(ar) {
+                    @include seadragon-controls-sprite(next);
                 }
+            }
 
-                &.previous:before {
-                    content: "←";
+            &.next-page {
+                @include seadragon-controls-sprite(next);
+
+                &:lang(ar) {
+                    @include seadragon-controls-sprite(previous);
                 }
             }
+        }
+    }
 
-            input[type="search"] {
-                width: 8em;
+    #grid {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        top: 0;
+
+        padding: 30px 0;
+
+        overflow-x: hidden;
+        overflow-y: scroll;
+        -webkit-overflow-scrolling: touch;
+
+        background-color: #111;
+
+        div {
+            display: inline-block;
+            height: 256px;
+            width: 256px;
+
+            margin: 8px;
+
+            overflow: hidden;
+
+            // JavaScript will set background-url to the image, avoiding extra DOM elements and some
+            // alignment bugs exposed based on the aspect ratio of a contained <img> within a row(?!)
+            background-color: transparent;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: contain;
+
+            color: darken($wdl-viewer-text-color, 15%);
+            line-height: 490px;
+            text-align: left;
+
+            @media screen and (max-width: 600px) {
+                height: 128px;
+                width: 128px;
+                line-height: 240px;
             }
+
+            &.hit {
+                outline: solid $wdl-viewer-search-hit-color 2px;
+            }
+
+            &.current {
+                outline: solid $wdl-viewer-current-page-outline-color 2px;
+            }
+        }
+    }
+
+    #content-search {
+        position: fixed;
+        bottom: $wdl-viewer-toolbar-height + $wdl-viewer-toolbar-border-width;
+        right: 0;
+
+        padding: 2px;
+
+        background-color: $wdl-viewer-toolbar-background-color;
+        background-color: transparentize($wdl-viewer-toolbar-background-color, .2);
+
+        border: $wdl-viewer-toolbar-border-width solid $wdl-viewer-toolbar-border-color;
+        border-right-width: 0;
+
+        input[type='search'] {
+            width: 10em;
         }
     }
 
     #help {
         position: fixed;
-        top: 0;
         bottom: 0;
         left: 0;
         right: 0;
+        top: 0;
 
         z-index: 9999;
 
-        width: 100%;
         height: 100%;
+        width: 100%;
         min-height: 100%;
         min-width: 100%;
 
+        background-color: transparentize($wdl-viewer-bg, .2);
+        color: $wdl-viewer-text-color;
+        font-size: x-large;
         text-align: center;
+
+        .no-rgba & {
+            background-color: $wdl-viewer-bg;
+            @include opacity(.8);
+        }
+
+        @media screen and (max-width: $wdl-viewer-breakpoint-small) {
+            font-size: inherit;
+        }
 
         > div {
             display: table;
@@ -427,49 +562,45 @@
             }
         }
 
-        color: white;
-        background-color: rgba(0,0,0, 0.8);
-        .no-rgba & {
-            background-color: black;
-            @include opacity(0.8);
-        }
-
-        font-size: x-large;
-        @media screen and (max-width: $breakSmall) {
-            font-size: inherit;
-        }
-
         h1 {
             font-family: sans-serif;
             font-size: xx-large;
-            @media screen and (max-width: $breakSmall) {
+            @media screen and (max-width: $wdl-viewer-breakpoint-small) {
                 font-size: larger;
             }
         }
 
         h2 {
-            font-family: sans-serif;
             color: inherit;
+            font-family: sans-serif;
         }
 
-        p, table {
-            font-size: smaller;
+        p,
+        table {
             max-width: 40em;
+
             margin: auto;
 
             color: #ddd;
+            font-size: smaller;
         }
 
-        th, td {
-            vertical-align: top;
+        th,
+        td {
             padding: 0 1em;
+            vertical-align: top;
         }
 
         td {
             text-align: left;
+
             &:lang(ar) {
                 text-align: right;
             }
+        }
+
+        kbd {
+            background-color: transparent;
         }
 
         .touch & .keyboard-controls {
@@ -481,7 +612,7 @@
         }
     }
 
-    // Rules to hide features when they're unsupported:
+    // Rules using Modernizr classes to hide features when they're unsupported:
     .no-fullscreen & .requires-fullscreen {
         display: none;
     }
@@ -490,8 +621,7 @@
     .no-csstransforms & #viewer[data-active-view=page] .requires-rotation,
     .no-canvas & #viewer[data-active-view=seadragon] .requires-rotation,
     .no-canvas & #help .requires-rotation,
-    .touch & .requires-rotation
-    {
+    .touch & .requires-rotation {
         display: none;
     }
 }
