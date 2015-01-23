@@ -356,6 +356,10 @@
             this.activeView.prefetch();
         }, this));
 
+        $viewer.on("prefetch-page", $.proxy(function (evt, group, index) {
+            this.activeView.prefetchPage(group, index);
+        }, this));
+
         $window.on("resize", $.proxy(function () {
             this.activeView.onResize();
         }, this));
@@ -735,6 +739,11 @@
             }
         };
 
+        this.prefetchPage = function (group, index) {
+            nextImages[nextImages.length - 1].src = controller.generateImageUrl(group, index,
+                                                                                config.maxPageEdge);
+        };
+
         this.updateSearch = function () {
             if (!config.fts || !controller.search || !controller.search.query) {
                 return;
@@ -988,6 +997,7 @@
         };
 
         this.prefetch = function () {};
+        this.prefetchPage = function () {};
     }
 
     function GridView(controller, $container, config) {
@@ -1112,6 +1122,7 @@
         };
 
         this.prefetch = function () {};
+        this.prefetchPage = function () {};
 
         $container.on("click", "div", function () {
             var newPage = this.id.match(/^index-(\d+)/);
