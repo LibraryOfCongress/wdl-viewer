@@ -63,7 +63,7 @@
             $viewer = $(elm),
             $header = $viewer.find("header"),
             $footer = $viewer.find("footer"),
-            $help = $("#help"),
+            $help = $("#help").removeClass("hidden").hide(),
             $pages = $("#pages"),
             $grid = $('<div id="grid"></div>').hide().insertAfter($pages),
             $seadragon = $('<div id="seadragon"></div>').hide().insertAfter($pages),
