@@ -84,6 +84,10 @@
         config.maxPageEdge = 1024;
         config.maxThumbnailEdge = 256;
 
+        // This allows the calling page to provide a function which can be used to force the page view
+        // to display only a single page even when there would otherwise be room to display two pages.
+        config.forceSinglePageDisplay = config.forceSinglePageDisplay || function () { return false; };
+
         // These control the state of the overall View (pagination, search, etc.) but not the individual
         // page displays:
         this.currentGroup = parseInt($groupControl.val(), 10) || 1;
@@ -657,7 +661,14 @@
         };
 
         this.getPageCount = function () {
-            return $pages.find("img:visible").length;
+            if (this.config.forceSinglePageDisplay(this.controller.currentGroup,
+                                                   this.controller.currentIndex)) {
+                return 1;
+            } else if ($nextPage.data('dirty') || $nextPage.is(':visible')) {
+                return 2;
+            } else {
+                return 1;
+            }
         };
 
         this.update = function() {
@@ -708,7 +719,9 @@
                 overflow = ($nextPage.outerHeight() + $currentPage.outerHeight() + 20 >= $window.height());
             }
 
-            if (lastPage || overflow) {
+            if (lastPage || overflow || this.config.forceSinglePageDisplay(this.controller.currentGroup,
+                                                                           this.controller.currentIndex))
+            {
                 $nextPage.hide();
             } else {
                 $nextPage.show()
