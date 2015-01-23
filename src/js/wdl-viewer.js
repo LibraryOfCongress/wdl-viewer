@@ -1,4 +1,4 @@
-/*global navigator, window, document, Element, Modernizr, jQuery, Image, OpenSeadragon */
+/*global navigator, window, document, Element, Modernizr, jQuery, Image, OpenSeadragon, WDL */
 
 (function ($) {
     "use strict";
@@ -615,10 +615,11 @@
                 return;
             }
 
+            // TODO: Refactor this into the SearchController
             WDL.ajaxRetry({
                 url: this.config.matchingPagesUrl,
                 dataType: "json",
-                data: {q: this.searchText}
+                data: {q: this.searchText, qla: this.config.searchLanguageCode}
             }).success($.proxy(function (data) {
                 this.searchResultPages = data;
                 $("#search .result-count").removeAttr("hidden").text(data.length + " pages");
@@ -783,8 +784,8 @@
 
                     var $page = index == controller.currentIndex ? $currentPage : $nextPage;
 
-                    var master_height = data.height,
-                        master_width = data.width;
+                    var masterHeight = data.height,
+                        masterWidth = data.width;
 
                     $.each(data.words, function (k, v) {
                         if (!WDL.Search.inTerms(k, terms)) {
@@ -796,10 +797,14 @@
                             var coords = v[i];
 
                             $('<div class="highlighted">').css({
-                                "left":     WDL.Search.formatPercentage(coords[0] / master_width),
-                                "top":      WDL.Search.formatPercentage(Math.max(0, (coords[3] / master_height) - 0.01)),
-                                "right":    WDL.Search.formatPercentage(1.0 - coords[2] / master_width),
-                                "bottom":   WDL.Search.formatPercentage(1.0 - Math.min(1.0, (coords[1] / master_height) + 0.01)),
+                                "left":     WDL.Search.formatPercentage(coords[0] / masterWidth),
+                                "top":      WDL.Search.formatPercentage(
+                                                Math.max(0, (coords[3] / masterHeight) - 0.01)
+                                            ),
+                                "right":    WDL.Search.formatPercentage(1.0 - coords[2] / masterWidth),
+                                "bottom":   WDL.Search.formatPercentage(
+                                                1.0 - Math.min(1.0, (coords[1] / masterHeight) + 0.01)
+                                            ),
                             }).insertAfter($page);
                         }
                     });
