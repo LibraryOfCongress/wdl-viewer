@@ -119,14 +119,16 @@
         // Add toolbar features which only work with JavaScript:
         if (Modernizr.canvas || Modernizr.csstransforms) {
             $('<button id="rotate-left" class="requires-rotation" type="button"></button>')
-                .text(gettext("Rotate Left"))
+                .append($('<span class="fa fa-rotate-left"></span>'))
+                .append($('<span class="title">').text(gettext('Rotate Left')))
                 .appendTo("footer .toolbar .controls")
                 .on("click", $.proxy(function () {
                     this.rotate(true);
                 }, this));
 
             $('<button id="rotate-right" class="requires-rotation" type="button"></button>')
-                .text(gettext("Rotate Right"))
+                .append($('<span class="fa fa-rotate-right"></span>'))
+                .append($('<span class="title">').text(gettext('Rotate Right')))
                 .appendTo("footer .toolbar .controls")
                 .on("click", $.proxy(function () {
                     this.rotate();
@@ -134,7 +136,9 @@
         }
 
         if (this.seadragonView) {
-            $('<button id="toggle-seadragon" type="button">' + gettext('Zoom') + '</button>')
+            $('<button id="toggle-seadragon" type="button"></button>')
+                .append($('<span class="fa fa-search-plus"></span>'))
+                .append($('<span class="title">').text(gettext('Zoom')))
                 .appendTo("footer .toolbar .controls")
                 .on("click", $.proxy(function () {
                     if (this.activeView == this.seadragonView) {
@@ -145,7 +149,9 @@
                 }, this));
         }
 
-        $('<button id="toggle-grid" type="button">' + gettext('Grid') + '</button>')
+        $('<button id="toggle-grid" type="button"></button>')
+            .append($('<span class="fa fa-th-large"></span>'))
+            .append($('<span class="title">').text(gettext('Grid')))
             .appendTo("footer .toolbar .controls")
             .on("click", $.proxy(function () {
                 if (this.activeView == this.gridView) {
@@ -156,21 +162,27 @@
             }, this));
 
         if ($("html").hasClass("fullscreen")) {
-            $('<button id="toggle-fullscreen" type="button">' + gettext('Full Screen') + '</button>')
+            $('<button id="toggle-fullscreen" type="button"></button>')
+                .append($('<span class="fa fa-arrows-alt"></span>'))
+                .append($('<span class="title">').text(gettext('Full Screen')))
                 .appendTo("footer .toolbar .controls")
                 .on("click", function () {
                     toggleFullscreen();
                 });
         }
 
-        $('<button id="toggle-help" type="button">' + gettext('Help') + '</button>')
+        $('<button id="toggle-help" type="button"></button>')
+            .append($('<span class="fa fa-question-circle"></span>'))
+            .append($('<span class="title">').text(gettext('Help')))
             .appendTo("footer .toolbar .controls")
             .on("click", function () {
                 $("#help").toggle();
             });
 
         if (config.fts) {
-            var $search = $('<div id="content-search"></div>').appendTo($viewer).hide(),
+            var $search = $('<div id="content-search" class="controls"></div>')
+                            .appendTo('footer .toolbar')
+                            .hide(),
                 q = $.deparam(document.location.hash).q;
 
             this.setSearchText($.deparam(document.location.hash).q || "");
@@ -178,8 +190,9 @@
             this.search = new WDL.ItemSearchController($search.get(0), $viewer, config);
 
             var $searchToggle = $('<button id="toggle-search" type="button"></button>')
-                .text(gettext("Search"))
-                .appendTo("footer .toolbar .controls")
+                .append($('<span class="fa fa-search"></span>'))
+                .append($('<span class="title">').text(gettext('Search')))
+                .appendTo('footer .toolbar .controls:first')
                 .on("click", function () {
                     $("#content-search").toggle()
                         .find("input[type=search]")
@@ -208,6 +221,12 @@
                 controller.activeView.updateSearch();
             });
         }
+
+        // Set the title attribute on footer controls so the standard browser tooltip effect will work:
+        $footer.find('.control, button').find('.title').each(function (idx, title) {
+            var $title = $(title);
+            $title.parents('.control, button').attr('title', $title.text());
+        });
 
         $groupControl.on("change", function() {
             controller.setGroup(parseInt($groupControl.val(), 10));
@@ -798,7 +817,7 @@
         };
 
         this.hide = function () {
-            $("#toggle-seadragon").text(gettext("Zoom"));
+            $('#toggle-seadragon .title').text(gettext('Zoom'));
 
             if (this.seadragon) {
                 this.seadragon.close();
@@ -811,7 +830,7 @@
         };
 
         this.show = function () {
-            $("#toggle-seadragon").text(gettext("Read"));
+            $('#toggle-seadragon .title').text(gettext('Read'));
 
             if (this.seadragon) {
                 this.seadragon.close();
