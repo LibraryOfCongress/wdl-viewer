@@ -12,6 +12,8 @@
         </title>
         <link rel="stylesheet" href="../build/wdl-viewer.css" type="text/css">
         <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.2.0/css/font-awesome.min.css" type="text/css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
     </head>
     <body class="wdl-viewer">
         <!-- http://memory.loc.gov/cgi-bin/image-services/jp2.py?data=/home/www/data/gmd/gmd3m/g3200m/g3200m/gct00262/ca000002.jp2&res= -->
@@ -33,7 +35,7 @@
             <footer>
                 <nav class="toolbar">
                     <div class="item-detail-nav">
-                        <a href="/en/item/1/">Item Detail</a>
+                        <a href="http://www.wdl.org/en/item/11290/">Item Detail</a>
                     </div>
                     <label class="group">
                         Volume
@@ -44,7 +46,26 @@
                         </select>
                     </label>
                     <div class="index">
-                        <label>Page <input type="number" disabled class="current-index" value="1" min="1" max="1" step="1"></label> <label class="max-index-label">of <span class="max-index">1</span></label> <input disabled id="index" type="range" value="1" min="1" max="1" step="1"> <a class="page previous disabled">Previous</a> <a class="page next disabled">Next</a>
+                        <label>
+                            Page
+                            <input type="number" disabled class="current-index" value="1" min="1" max="461" step="1">
+                        </label>
+                        <label class="max-index-label">
+                            of
+                            <span class="max-index">1</span>
+                        </label>
+
+                        <input disabled id="index" type="range" value="1" min="1" max="1" step="1">
+
+                        <a class="control page previous disabled">
+                            <span class="fa fa-chevron-circle-left"></span>
+                            <span class="title">Previous</span>
+                        </a>
+
+                        <a class="control page next disabled">
+                            <span class="title">Next</span>
+                            <span class="fa fa-chevron-circle-right"></span>
+                        </a>
                     </div>
                     <div class="controls"></div>
                 </nav>
@@ -286,13 +307,18 @@
 
             var $window = $(window),
                 $viewer = $("#viewer").wdlViewer({
-                    pageGroups: {"1": 461}, // List of groups and the last index value in each
+                    pageGroups: {'1': 461}, // List of groups and the last index value in each
                     pageUrlTemplate: "first-folio.html#{group}/{index}",
                     imageUrlTemplate: "http://content.wdl.org/11290/service/thumbnail/{width}x{height}/{group}/{index}.jpg",
                     dziUrlTemplate: "http://content.wdl.org/11290/service/dzi/{group}/{index}.dzi",
                     seadragonPrefixUrl: "http://www.wdl.org/static/external/openseadragon/",
                     placeholderSrc: "http://content.wdl.org/placeholder/308x255.png",
-                    initialView: "page"
+                    initialView: 'page',
+                    forceSinglePageDisplay: function (group, index) {
+                        // This entire book was scanned as double pages so there's no need for the facing
+                        // page display:
+                        return true;
+                    }
                 });
 
             $("input,select").removeAttr("disabled");
