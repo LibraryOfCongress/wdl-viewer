@@ -84,6 +84,10 @@
         config.maxPageEdge = 1024;
         config.maxThumbnailEdge = 256;
 
+        // When the screen height is over this threshold, we will disable but not hide toolbars:
+        config.hideHeaderThreshold = config.hideHeaderThreshold || config.maxPageEdge;
+        config.hideFooterThreshold = config.hideFooterThreshold || config.maxPageEdge;
+
         // This allows the calling page to provide a function which can be used to force the page view
         // to display only a single page even when there would otherwise be room to display two pages.
         config.forceSinglePageDisplay = config.forceSinglePageDisplay || function () { return false; };
@@ -377,13 +381,17 @@
         $viewer.on("hide-header", function () {
             if (!headerHidden) {
                 headerHidden = true;
-                $header.stop(true, true).slideUp();
+                if ($window.height() < config.hideHeaderThreshold) {
+                    $header.stop(true, true).slideUp();
+                }
             }
         });
         $viewer.on("show-header", function () {
             if (headerHidden) {
                 headerHidden = false;
-                $header.stop(true, true).slideDown();
+                if ($window.height() < config.hideHeaderThreshold) {
+                    $header.stop(true, true).slideDown();
+                }
             }
         });
 
@@ -393,14 +401,18 @@
             // without using keyboard shortcuts:
             if (!footerHidden && (this.activeView != this.seadragonView)) {
                 footerHidden = true;
-                $footer.stop(true, true).slideUp();
+                if ($window.height() < config.hideFooterThreshold) {
+                    $footer.stop(true, true).slideUp();
+                }
             }
         }, this));
 
         $viewer.on("show-footer", function () {
             if (footerHidden) {
                 footerHidden = false;
-                $footer.stop(true, true).slideDown();
+                if ($window.height() < config.hideFooterThreshold) {
+                    $footer.stop(true, true).slideDown();
+                }
             }
         });
 
@@ -1046,6 +1058,8 @@
         });
 
         this.show = function () {
+            $('#toggle-grid .title').text(gettext('Read'));
+
             var container = $container.empty().get(0);
 
             for (var i=1; i <= controller.maxIndex; i++) {
@@ -1105,6 +1119,25 @@
         this.hide = function () {
             $container.off("scroll", gridScrollHandler);
             $container.hide().empty();
+
+            $('#toggle-grid .title').text(gettext('Grid'));
+        };
+
+        this.getPageCount = function () {
+            var scrollTop = container.scrollTop,
+                scrollBottom = scrollTop + container.offsetHeight,
+                thumbnails = container.children,
+                count = 0;
+
+            for (var i = thumbnails.length - 1; i >= 0; i--){
+                var thumb = thumbnails[i];
+
+                if ((thumb.offsetTop + thumb.offsetHeight) >= scrollTop && thumb.offsetTop <= scrollBottom) {
+                    count++;
+                }
+            }
+
+            return count;
         };
 
         this.onResize = function () {
